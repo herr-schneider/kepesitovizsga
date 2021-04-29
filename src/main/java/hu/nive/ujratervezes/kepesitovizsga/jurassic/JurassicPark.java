@@ -2,10 +2,7 @@ package hu.nive.ujratervezes.kepesitovizsga.jurassic;
 
 import org.mariadb.jdbc.MariaDbDataSource;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -19,12 +16,10 @@ public class JurassicPark {
 
     public List<String> checkOverpopulation() {
         List<String> results = new ArrayList<>();
-        int exp;
-        int act;
         try (Connection conn = dataSource.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(
-                     "SELECT * FROM dinosaur")) {
-            process(results, stmt);
+             Statement stmt = conn.createStatement()) //PreparedStatement stmt = conn.prepareStatement( "SELECT * FROM dinosaur"))
+        {
+            proccess(results, stmt);
         } catch (SQLException sqlException) {
             throw new IllegalStateException("DataBase error! " + sqlException);
         }
@@ -32,10 +27,10 @@ public class JurassicPark {
         return results;
     }
 
-    private void process(List<String> results, PreparedStatement stmt) throws SQLException {
+    private void proccess(List<String> results, Statement stmt) throws SQLException {
         int exp;
         int act;
-        try (ResultSet rs = stmt.executeQuery()) {
+        try (ResultSet rs = stmt.executeQuery("SELECT * FROM dinosaur")) {
             while (rs.next()) {
                 exp = rs.getInt("expected");
                 act = rs.getInt("actual");
@@ -45,6 +40,4 @@ public class JurassicPark {
             }
         }
     }
-
-
 }
